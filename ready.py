@@ -1,22 +1,50 @@
-books = open('books.txt', 'r')
-sents = open('single_sent.txt', 'w')
-bookss = books.readlines()
+on_sens = open('only_sent.txt', 'r')
+labels = open('labeled.txt', 'w')
+ons = on_sens.readlines()
+
+def masking(word, second):
+	print(word)
+	print(second)
+	if word == "":
+		#print(second)
+		return "fucked"
+	result = ""
+	seconds = second.split(" ")
+	for w in seconds:
+		if word in w:
+			if len(w) - len(word) < 3:
+				w = w.replace(word, "[mask]")
+		result = result + w + " "
+	result = result[:len(result)-2] + word + "\n"
+	return result
+
+k = 0
+for sent in ons:
+	i = 0
+	for w in sent:
+		if w.isupper():
+			break
+		i = i + 1
+	first = sent[:i]
+	second = sent[i:]
+	final = second
+
+	first_1 = first.split(',')
+	for sent_1 in first_1:
+		breaker = 0
+		first2 = sent_1.split(' ')
+		for sent2 in first2:
+			first3 = sent2.split('/')
+			for word in first3:
+				if word in second:
+					result = masking(word, second)
+					if not result == "fucked":
+						labels.write(result)
+					breaker = 1
+		if breaker:
+			break
+
+				
 
 
-def find(s, ch):
-    return [i for i, ltr in enumerate(s) if ltr == ch]
-
-start = 0
-for book in bookss:
-	start = 0
-	bar = find(book, '|')
-	if len(bar) == 0:
-		sents.write(book)
-		continue
-	for i in bar:
-		sents.write(book[start:i - 1] + "\n")
-		start = i + 2
-	sents.write(book[start:len(book)])
-
-# To do: splite colocation from sents
 
